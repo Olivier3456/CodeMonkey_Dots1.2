@@ -1,13 +1,14 @@
 using Unity.Entities;
 using UnityEngine;
 
+// Composant à attacher à notre objet Player.
 public class PlayerAuthoring : MonoBehaviour
 {
     public class Baker : Baker<PlayerAuthoring>
     {
         public override void Bake(PlayerAuthoring authoring)
         {
-            Entity entity = GetEntity(TransformUsageFlags.Dynamic); // Dynamic car on veut modifier le transform : on va le faire tourner.
+            Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
             AddComponent(entity, new Player());
         }

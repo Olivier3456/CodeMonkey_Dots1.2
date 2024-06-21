@@ -4,7 +4,6 @@ using Unity.Transforms;
 
 public partial struct RotatingCubeSystem : ISystem
 {
-
     // On ne veut exécuter notre code que s'il y a au moins un Entity dans la scène avec le composant RotateSpeed.Sinon, cela peut créer des erreurs.
     public void OnCreate(ref SystemState state)
     {
@@ -15,6 +14,10 @@ public partial struct RotatingCubeSystem : ISystem
     [BurstCompile]  // Parce qu'on veut que ce soit exécuté avec le compiler Burst.
     public void OnUpdate(ref SystemState state)
     {
+        // Désactive toute la fonction, car c'est maintenant HandleCubesSystem qui gère à la fois la rotation et le déplacement des cubes :
+        state.Enabled = false;
+        return;
+
 
         // (On n'a plus besoin de cette fonction, car on utilise un Job (voir plus bas), qui fait la même chose :
         /*
@@ -38,13 +41,11 @@ public partial struct RotatingCubeSystem : ISystem
 
 
         //===>
-        //rotatingCubeJob.Run(); // Pour sur le main thread, ce qui peut être utile pour debugger.
+        //rotatingCubeJob.Run(); // Pour exécuter notre job sur le main thread, ce qui peut être utile pour debugger.
         
         //===>
-        //state.Dependency = rotatingCubeJob.Schedule(state.Dependency); // S'exécute sur n'importe quel thread,
-                                                                         // mais tout le job sera sur le même thread.
-        // Le job peut se terminer sur la même frame comme sur celle d'après.
-        // Pour forcer le programme à attendre que le job soit fini à cette frame (mais c'est à éviter) :
+        //state.Dependency = rotatingCubeJob.Schedule(state.Dependency); // S'exécute sur n'importe quel thread, mais tout le job sera sur le même thread.
+        // Le job peut se terminer sur la même frame comme sur celle d'après. Pour forcer le programme à attendre que le job soit fini à cette frame (mais c'est à éviter) :
         // rotatingCubeJob.Schedule(state.Dependency).Complete();
 
         //===>
@@ -61,9 +62,10 @@ public partial struct RotatingCubeSystem : ISystem
     // Création de notre Job RotatingCubeJob :
 
     [BurstCompile]
-    [WithNone(typeof(Player))] // On ne veut pas que notre Player, qui a le composant RotateSpeed, tourne comme les autres cubes.
-    // On aurait pu aussi créer un composant vide pour le Cube, par exemple RotatingCube, et un RotatingCubeAuthoring qu'on aurait attaché à notre cube, ce qui nous aurait
-    // permis, pour ne faire tourner que nos cubes, de faire : [WithAll(typeof(RotatingCube))]
+    //[WithNone(typeof(Player))] // Car on ne veut pas que notre Player, qui a le composant RotateSpeed, tourne comme les autres cubes.
+    // On peut aussi créer un composant vide pour le Cube, par exemple RotatingCube, et un RotatingCubeAuthoring qu'on attache à notre cube,
+    // ce qui nous permet, pour ne faire tourner que nos cubes, de mettre :
+    [WithAll(typeof(RotatingCube))]
     public partial struct RotatingCubeJob : IJobEntity
     {
         public float deltaTime;
