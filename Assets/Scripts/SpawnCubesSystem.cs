@@ -1,7 +1,9 @@
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
+using UnityEditor;
 
+// Pour une façon plus sûre de spawner nos entities, voir PlayerShootingSystem.
 public partial class SpawnCubesSystem : SystemBase  // On aurait pu implémenter ISystem, mais on met SystemBase pour voir une autre façon de faire.
 {
     protected override void OnCreate()
@@ -24,7 +26,7 @@ public partial class SpawnCubesSystem : SystemBase  // On aurait pu implémenter 
             // donc ici nos cubes avec le composant MovementAuthoring auront tous le même float3 movement.
 
 
-            EntityManager.SetComponentData(spawnedEntity, new LocalTransform
+            SystemAPI.SetComponent(spawnedEntity, new LocalTransform
             {
                 Position = new float3(UnityEngine.Random.Range(-5f, 5f), 0, UnityEngine.Random.Range(-5f, 5f)),
                 Rotation = quaternion.identity,
@@ -33,9 +35,15 @@ public partial class SpawnCubesSystem : SystemBase  // On aurait pu implémenter 
 
 
             // Pour simplifier, on peut aussi faire :
-            //EntityManager.SetComponentData(spawnedEntity, new LocalTransform());
+            //SystemAPI.SetComponent(spawnedEntity, new LocalTransform());
             //LocalTransform.FromPosition(UnityEngine.Random.Range(-5f, 5f), 0, UnityEngine.Random.Range(-5f, 5f));
-
         }
+
+
+        // Si on veut faire spawner un grand nombre d'entities et optimiser au maximum,
+        // mieux vaut utiliser une surcharge d'EntityManager.Instantiate() qui prend un tableau d'entities et les crée toutes ensemble.
+
+
+        // Mais ATTENTION, cette méthode peut créer des erreurs, il vaut donc mieux faire spawner nos entities comme dans PlayerShootingSystem.
     }
 }

@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 
+
 public partial struct RotatingCubeSystem : ISystem
 {
     // On ne veut exécuter notre code que s'il y a au moins un Entity dans la scène avec le composant RotateSpeed.Sinon, cela peut créer des erreurs.

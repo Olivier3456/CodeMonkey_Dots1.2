@@ -21,7 +21,7 @@ public class RotateSpeedAuthoring : MonoBehaviour
 }
 
 
-// Ce compent data ne contient qu'une seule donnée, la vitesse de rotation.
+// Ce component data ne contient qu'une seule donnée, la vitesse de rotation.
 public struct RotateSpeed : IComponentData
 {
     public float value;
